@@ -349,6 +349,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
     });
     reactContext.addLifecycleEventListener(webView);
     mWebViewConfig.configWebView(webView);
+    webView.clearCache(true); // hot-fix: remove cached files every instantiating a webview 
     webView.getSettings().setBuiltInZoomControls(true);
     webView.getSettings().setDisplayZoomControls(false);
     webView.getSettings().setDomStorageEnabled(true);
@@ -486,7 +487,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         view.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
       } else if ("compatibility".equals(mixedContentMode)) {
         view.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
-      } 
+      }
     }
   }
 
