@@ -7,7 +7,7 @@ We use GitHub Issues for tracking bugs in React Native.
 
 Your issue may be closed without explanation if it does not provide the information required by this template.
 
---- Please use this template, and delete everything above this line before submitting your issue --- 
+--- Please use this template, and delete everything above this line before submitting your issue ---
 
 ### Description
 
@@ -15,7 +15,7 @@ Your issue may be closed without explanation if it does not provide the informat
 
 ### Reproduction
 
-[FILL THIS OUT: Try to reproduce your bug on rnplay.org and provide a link. If you can't reproduce the bug on rnplay.org, provide a sample project.]
+[FILL THIS OUT: Try to reproduce your bug on https://sketch.expo.io/ and provide a link. If you can't reproduce the bug on Sketch, provide a sample project. At the very least, provide an example of your code.]
 
 ### Solution
 
@@ -23,7 +23,7 @@ Your issue may be closed without explanation if it does not provide the informat
 
 ### Additional Information
 
-* React Native version: [FILL THIS OUT: Does the bug reproduce on the latest RN release?]
+* React Native version: [FILL THIS OUT: Be specific, filling out "latest" here is not enough.]
 * Platform: [FILL THIS OUT: iOS, Android, or both?]
-* Operating System: [FILL THIS OUT: MacOS, Linux, or Windows?]
+* Development Operating System: [FILL THIS OUT: Are you developing on MacOS, Linux, or Windows?]
 * Dev tools: [FILL THIS OUT: Xcode or Android Studio version, iOS or Android SDK version, if applicable]
