@@ -25,12 +25,24 @@ module.exports = [
     parse: (val) => val === 'false' ? false : true,
     default: true,
   }, {
+    command: '--minify [boolean]',
+    description: 'Allows overriding whether bundle is minified. This defaults to ' +
+      'false if dev is true, and true if dev is false. Disabling minification ' +
+      'can be useful for speeding up production builds for testing purposes.',
+    parse: (val) => val === 'false' ? false : true,
+  }, {
     command: '--bundle-output <string>',
     description: 'File name where to store the resulting bundle, ex. /tmp/groups.bundle',
   }, {
     command: '--bundle-encoding [string]',
     description: 'Encoding the bundle should be written in (https://nodejs.org/api/buffer.html#buffer_buffer).',
     default: 'utf8',
+  }, {
+    command: '--max-workers [number]',
+    description: 'Specifies the maximum number of workers the worker-pool ' +
+      'will spawn for transforming files. This defaults to the number of the ' +
+      'cores available on your machine.',
+    parse: (workers: string) => Number(workers),
   }, {
     command: '--sourcemap-output [string]',
     description: 'File name where to store the sourcemap file for resulting bundle, ex. /tmp/groups.map',

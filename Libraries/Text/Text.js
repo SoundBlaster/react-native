@@ -8,6 +8,7 @@
  *
  * @providesModule Text
  * @flow
+ * @format
  */
 'use strict';
 
@@ -21,10 +22,13 @@ const ReactNativeViewAttributes = require('ReactNativeViewAttributes');
 const StyleSheetPropType = require('StyleSheetPropType');
 const TextStylePropTypes = require('TextStylePropTypes');
 const Touchable = require('Touchable');
+const UIManager = require('UIManager');
 
+const createReactClass = require('create-react-class');
 const createReactNativeComponentClass = require('createReactNativeComponentClass');
 const mergeFast = require('mergeFast');
 const processColor = require('processColor');
+const {ViewContextTypes} = require('ViewContext');
 
 const stylePropType = StyleSheetPropType(TextStylePropTypes);
 
@@ -44,172 +48,120 @@ const viewConfig = {
   uiViewClassName: 'RCTText',
 };
 
+import type {ViewChildContext} from 'ViewContext';
+
 /**
  * A React component for displaying text.
  *
- * `Text` supports nesting, styling, and touch handling.
- *
- * In the following example, the nested title and body text will inherit the `fontFamily` from
- *`styles.baseText`, but the title provides its own additional styles.  The title and body will
- * stack on top of each other on account of the literal newlines:
- *
- * ```ReactNativeWebPlayer
- * import React, { Component } from 'react';
- * import { AppRegistry, Text, StyleSheet } from 'react-native';
- *
- * export default class TextInANest extends Component {
- *   constructor(props) {
- *     super(props);
- *     this.state = {
- *       titleText: "Bird's Nest",
- *       bodyText: 'This is not really a bird nest.'
- *     };
- *   }
- *
- *   render() {
- *     return (
- *       <Text style={styles.baseText}>
- *         <Text style={styles.titleText} onPress={this.onPressTitle}>
- *           {this.state.titleText}{'\n'}{'\n'}
- *         </Text>
- *         <Text numberOfLines={5}>
- *           {this.state.bodyText}
- *         </Text>
- *       </Text>
- *     );
- *   }
- * }
- *
- * const styles = StyleSheet.create({
- *   baseText: {
- *     fontFamily: 'Cochin',
- *   },
- *   titleText: {
- *     fontSize: 20,
- *     fontWeight: 'bold',
- *   },
- * });
- *
- * // skip this line if using Create React Native App
- * AppRegistry.registerComponent('TextInANest', () => TextInANest);
- * ```
+ * See https://facebook.github.io/react-native/docs/text.html
  */
 
-// $FlowFixMe(>=0.41.0)
-const Text = React.createClass({
+const Text = createReactClass({
+  displayName: 'Text',
   propTypes: {
     /**
-     * When `numberOfLines` is set, this prop defines how text will be truncated.
-     * `numberOfLines` must be set in conjunction with this prop.
+     * When `numberOfLines` is set, this prop defines how text will be
+     * truncated.
      *
-     * This can be one of the following values:
-     *
-     * - `head` - The line is displayed so that the end fits in the container and the missing text
-     * at the beginning of the line is indicated by an ellipsis glyph. e.g., "...wxyz"
-     * - `middle` - The line is displayed so that the beginning and end fit in the container and the
-     * missing text in the middle is indicated by an ellipsis glyph. "ab...yz"
-     * - `tail` - The line is displayed so that the beginning fits in the container and the
-     * missing text at the end of the line is indicated by an ellipsis glyph. e.g., "abcd..."
-     * - `clip` - Lines are not drawn past the edge of the text container.
-     *
-     * The default is `tail`.
-     *
-     * > `clip` is working only for iOS
+     * See https://facebook.github.io/react-native/docs/text.html#ellipsizemode
      */
     ellipsizeMode: PropTypes.oneOf(['head', 'middle', 'tail', 'clip']),
     /**
-     * Used to truncate the text with an ellipsis after computing the text
-     * layout, including line wrapping, such that the total number of lines
-     * does not exceed this number.
+     * Used to truncate the text with an ellipsis.
      *
-     * This prop is commonly used with `ellipsizeMode`.
+     * See https://facebook.github.io/react-native/docs/text.html#numberoflines
      */
     numberOfLines: PropTypes.number,
     /**
-     * Set text break strategy on Android API Level 23+, possible values are `simple`, `highQuality`, `balanced`
-     * The default value is `highQuality`.
-     * @platform android
+     * Set text break strategy on Android.
+     *
+     * See https://facebook.github.io/react-native/docs/text.html#textbreakstrategy
      */
     textBreakStrategy: PropTypes.oneOf(['simple', 'highQuality', 'balanced']),
     /**
-     * Invoked on mount and layout changes with
+     * Invoked on mount and layout changes.
      *
-     *   `{nativeEvent: {layout: {x, y, width, height}}}`
+     * See https://facebook.github.io/react-native/docs/text.html#onlayout
      */
     onLayout: PropTypes.func,
     /**
      * This function is called on press.
      *
-     * e.g., `onPress={() => console.log('1st')}`
+     * See https://facebook.github.io/react-native/docs/text.html#onpress
      */
     onPress: PropTypes.func,
     /**
      * This function is called on long press.
      *
-     * e.g., `onLongPress={this.increaseSize}>`
+     * See https://facebook.github.io/react-native/docs/text.html#onlongpress
      */
     onLongPress: PropTypes.func,
     /**
-     * When the scroll view is disabled, this defines how far your touch may
-     * move off of the button, before deactivating the button. Once deactivated,
-     * try moving it back and you'll see that the button is once again
-     * reactivated! Move it back and forth several times while the scroll view
-     * is disabled. Ensure you pass in a constant to reduce memory allocations.
+     * Defines how far your touch may move off of the button, before
+     * deactivating the button.
+     *
+     * See https://facebook.github.io/react-native/docs/text.html#pressretentionoffset
      */
     pressRetentionOffset: EdgeInsetsPropType,
     /**
-     * Lets the user select text, to use the native copy and paste functionality.
+     * Lets the user select text.
+     *
+     * See https://facebook.github.io/react-native/docs/text.html#selectable
      */
     selectable: PropTypes.bool,
     /**
      * The highlight color of the text.
-     * @platform android
+     *
+     * See https://facebook.github.io/react-native/docs/text.html#selectioncolor
      */
     selectionColor: ColorPropType,
     /**
-     * When `true`, no visual change is made when text is pressed down. By
-     * default, a gray oval highlights the text on press down.
-     * @platform ios
+     * When `true`, no visual change is made when text is pressed down.
+     *
+     * See https://facebook.github.io/react-native/docs/text.html#supperhighlighting
      */
     suppressHighlighting: PropTypes.bool,
     style: stylePropType,
     /**
      * Used to locate this view in end-to-end tests.
+     *
+     * See https://facebook.github.io/react-native/docs/text.html#testid
      */
     testID: PropTypes.string,
     /**
      * Used to locate this view from native code.
-     * @platform android
+     *
+     * See https://facebook.github.io/react-native/docs/text.html#nativeid
      */
     nativeID: PropTypes.string,
     /**
-     * Specifies whether fonts should scale to respect Text Size accessibility settings. The
-     * default is `true`.
+     * Whether fonts should scale to respect Text Size accessibility settings.
+     *
+     * See https://facebook.github.io/react-native/docs/text.html#allowfontscaling
      */
     allowFontScaling: PropTypes.bool,
     /**
-     * When set to `true`, indicates that the view is an accessibility element. The default value
-     * for a `Text` element is `true`.
+     * Indicates whether the view is an accessibility element.
      *
-     * See the
-     * [Accessibility guide](docs/accessibility.html#accessible-ios-android)
-     * for more information.
+     * See https://facebook.github.io/react-native/docs/text.html#accessible
      */
     accessible: PropTypes.bool,
     /**
-     * Specifies whether font should be scaled down automatically to fit given style constraints.
-     * @platform ios
+     * Whether font should be scaled down automatically.
+     *
+     * See https://facebook.github.io/react-native/docs/text.html#adjustsfontsizetofit
      */
     adjustsFontSizeToFit: PropTypes.bool,
-
     /**
-     * Specifies smallest possible scale a font can reach when adjustsFontSizeToFit is enabled. (values 0.01-1.0).
-     * @platform ios
+     * Smallest possible scale a font can reach.
+     *
+     * See https://facebook.github.io/react-native/docs/text.html#minimumfontscale
      */
     minimumFontScale: PropTypes.number,
     /**
-     * Specifies the disabled state of the text view for testing purposes
-     * @platform android
+     * Specifies the disabled state of the text view for testing purposes.
+     *
+     * See https://facebook.github.io/react-native/docs/text.html#disabled
      */
     disabled: PropTypes.bool,
   },
@@ -218,7 +170,6 @@ const Text = React.createClass({
       accessible: true,
       allowFontScaling: true,
       ellipsizeMode: 'tail',
-      disabled: false,
     };
   },
   getInitialState: function(): Object {
@@ -228,15 +179,13 @@ const Text = React.createClass({
   },
   mixins: [NativeMethodsMixin],
   viewConfig: viewConfig,
-  getChildContext(): Object {
-    return {isInAParentText: true};
+  getChildContext(): ViewChildContext {
+    return {
+      isInAParentText: true,
+    };
   },
-  childContextTypes: {
-    isInAParentText: PropTypes.bool
-  },
-  contextTypes: {
-    isInAParentText: PropTypes.bool
-  },
+  childContextTypes: ViewContextTypes,
+  contextTypes: ViewContextTypes,
   /**
    * Only assigned if touch is needed.
    */
@@ -258,10 +207,11 @@ const Text = React.createClass({
     if (this.props.onStartShouldSetResponder || this._hasPressHandler()) {
       if (!this._handlers) {
         this._handlers = {
-          onStartShouldSetResponder: (): bool => {
-            const shouldSetFromProps = this.props.onStartShouldSetResponder &&
-                // $FlowFixMe(>=0.41.0)
-                this.props.onStartShouldSetResponder();
+          onStartShouldSetResponder: (): boolean => {
+            const shouldSetFromProps =
+              this.props.onStartShouldSetResponder &&
+              // $FlowFixMe(>=0.41.0)
+              this.props.onStartShouldSetResponder();
             const setResponder = shouldSetFromProps || this._hasPressHandler();
             if (setResponder && !this.touchableHandleActivePressIn) {
               // Attach and bind all the other handlers only the first time a touch
@@ -272,7 +222,10 @@ const Text = React.createClass({
                 }
               }
               this.touchableHandleActivePressIn = () => {
-                if (this.props.suppressHighlighting || !this._hasPressHandler()) {
+                if (
+                  this.props.suppressHighlighting ||
+                  !this._hasPressHandler()
+                ) {
                   return;
                 }
                 this.setState({
@@ -281,7 +234,10 @@ const Text = React.createClass({
               };
 
               this.touchableHandleActivePressOut = () => {
-                if (this.props.suppressHighlighting || !this._hasPressHandler()) {
+                if (
+                  this.props.suppressHighlighting ||
+                  !this._hasPressHandler()
+                ) {
                   return;
                 }
                 this.setState({
@@ -289,11 +245,11 @@ const Text = React.createClass({
                 });
               };
 
-              this.touchableHandlePress = (e: SyntheticEvent) => {
+              this.touchableHandlePress = (e: SyntheticEvent<>) => {
                 this.props.onPress && this.props.onPress(e);
               };
 
-              this.touchableHandleLongPress = (e: SyntheticEvent) => {
+              this.touchableHandleLongPress = (e: SyntheticEvent<>) => {
                 this.props.onLongPress && this.props.onLongPress(e);
               };
 
@@ -301,45 +257,37 @@ const Text = React.createClass({
                 return this.props.pressRetentionOffset || PRESS_RECT_OFFSET;
               };
             }
-            // $FlowFixMe(>=0.41.0)
             return setResponder;
           },
-          onResponderGrant: function(e: SyntheticEvent, dispatchID: string) {
-            // $FlowFixMe(>=0.41.0)
+          onResponderGrant: function(e: SyntheticEvent<>, dispatchID: string) {
             this.touchableHandleResponderGrant(e, dispatchID);
             this.props.onResponderGrant &&
-              // $FlowFixMe(>=0.41.0)
               this.props.onResponderGrant.apply(this, arguments);
           }.bind(this),
-          onResponderMove: function(e: SyntheticEvent) {
-            // $FlowFixMe(>=0.41.0)
+          onResponderMove: function(e: SyntheticEvent<>) {
             this.touchableHandleResponderMove(e);
             this.props.onResponderMove &&
-              // $FlowFixMe(>=0.41.0)
               this.props.onResponderMove.apply(this, arguments);
           }.bind(this),
-          onResponderRelease: function(e: SyntheticEvent) {
-            // $FlowFixMe(>=0.41.0)
+          onResponderRelease: function(e: SyntheticEvent<>) {
             this.touchableHandleResponderRelease(e);
             this.props.onResponderRelease &&
-              // $FlowFixMe(>=0.41.0)
               this.props.onResponderRelease.apply(this, arguments);
           }.bind(this),
-          onResponderTerminate: function(e: SyntheticEvent) {
-            // $FlowFixMe(>=0.41.0)
+          onResponderTerminate: function(e: SyntheticEvent<>) {
             this.touchableHandleResponderTerminate(e);
             this.props.onResponderTerminate &&
-              // $FlowFixMe(>=0.41.0)
               this.props.onResponderTerminate.apply(this, arguments);
           }.bind(this),
-          onResponderTerminationRequest: function(): bool {
+          onResponderTerminationRequest: function(): boolean {
             // Allow touchable or props.onResponderTerminationRequest to deny
             // the request
-            // $FlowFixMe(>=0.41.0)
             var allowTermination = this.touchableHandleResponderTerminationRequest();
             if (allowTermination && this.props.onResponderTerminationRequest) {
-              // $FlowFixMe(>=0.41.0)
-              allowTermination = this.props.onResponderTerminationRequest.apply(this, arguments);
+              allowTermination = this.props.onResponderTerminationRequest.apply(
+                this,
+                arguments,
+              );
             }
             return allowTermination;
           }.bind(this),
@@ -354,7 +302,7 @@ const Text = React.createClass({
     if (newProps.selectionColor != null) {
       newProps = {
         ...newProps,
-        selectionColor: processColor(newProps.selectionColor)
+        selectionColor: processColor(newProps.selectionColor),
       };
     }
     if (Touchable.TOUCH_TARGET_DEBUG && newProps.onPress) {
@@ -376,20 +324,23 @@ type RectOffset = {
   left: number,
   right: number,
   bottom: number,
-}
+};
 
 var PRESS_RECT_OFFSET = {top: 20, left: 20, right: 20, bottom: 30};
 
-var RCTText = createReactNativeComponentClass(viewConfig);
+var RCTText = createReactNativeComponentClass(
+  viewConfig.uiViewClassName,
+  () => viewConfig,
+);
 var RCTVirtualText = RCTText;
 
-if (Platform.OS === 'android') {
-  RCTVirtualText = createReactNativeComponentClass({
+if (UIManager.RCTVirtualText) {
+  RCTVirtualText = createReactNativeComponentClass('RCTVirtualText', () => ({
     validAttributes: mergeFast(ReactNativeViewAttributes.UIView, {
       isHighlighted: true,
     }),
     uiViewClassName: 'RCTVirtualText',
-  });
+  }));
 }
 
 module.exports = Text;

@@ -11,22 +11,22 @@
  */
 'use strict';
 
-var createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
+const PropTypes = require('prop-types');
 
-var {PropTypes} = require('React');
+const createStrictShapeTypeChecker = require('createStrictShapeTypeChecker');
 
-var EdgeInsetsPropType = createStrictShapeTypeChecker({
+const EdgeInsetsPropType = (createStrictShapeTypeChecker({
   top: PropTypes.number,
   left: PropTypes.number,
   bottom: PropTypes.number,
   right: PropTypes.number,
-});
+}): ReactPropsCheckType & ReactPropsChainableTypeChecker);
 
-export type EdgeInsetsProp = {
-  top: number,
-  left: number,
-  bottom: number,
-  right: number,
-};
+export type EdgeInsetsProp = {|
+  +top: number,
+  +left: number,
+  +bottom: number,
+  +right: number,
+|};
 
 module.exports = EdgeInsetsPropType;

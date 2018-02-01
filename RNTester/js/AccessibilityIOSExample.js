@@ -19,7 +19,7 @@ var {
   View,
 } = ReactNative;
 
-class AccessibilityIOSExample extends React.Component {
+class AccessibilityIOSExample extends React.Component<{}> {
   render() {
     return (
       <View>
@@ -48,12 +48,22 @@ class AccessibilityIOSExample extends React.Component {
             Accessibility traits example
           </Text>
         </View>
+        <Text>
+          Text's accessibilityLabel is the raw text itself unless it is set explicitly.
+        </Text>
+        <Text accessibilityLabel="Test of accessibilityLabel"
+          accessible={true}>
+          This text component's accessibilityLabel is set explicitly.
+        </Text>
+        <View accessibilityElementsHidden={true}>
+          <Text>This view's children are hidden from the accessibility tree</Text>
+        </View>
       </View>
     );
   }
 }
 
-class ScreenReaderStatusExample extends React.Component {
+class ScreenReaderStatusExample extends React.Component<{}, $FlowFixMeState> {
   state = {
     screenReaderEnabled: false,
   }

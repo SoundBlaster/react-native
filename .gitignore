@@ -36,6 +36,9 @@ buck-out
 /ReactAndroid/src/main/jni/prebuilt/lib/x86/
 /ReactAndroid/src/main/gen
 
+# Watchman
+.watchmanconfig
+
 # Android
 .idea
 .gradle
@@ -47,6 +50,8 @@ local.properties
 node_modules
 *.log
 .nvm
+/bots/node_modules/
+*/**/yarn.lock
 
 # OS X
 .DS_Store

@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (c) 2014-present, Facebook, Inc.
  * All rights reserved.
  *
@@ -20,7 +20,7 @@ public enum YogaLogLevel {
   VERBOSE(4),
   FATAL(5);
 
-  private int mIntValue;
+  private final int mIntValue;
 
   YogaLogLevel(int intValue) {
     mIntValue = intValue;

@@ -24,8 +24,10 @@
 
 - (void)setUp
 {
-  _runner = RCTInitRunnerForApp(@"RNTester/js/RNTesterApp.ios", nil);
-  if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 10) {
+  _runner = RCTInitRunnerForApp(@"RNTester/js/RNTesterApp.ios", nil, nil);
+  if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 11) {
+    _runner.testSuffix = @"-iOS11";
+  } else if ([[[UIDevice currentDevice] systemVersion] floatValue] >= 10) {
     _runner.testSuffix = @"-iOS10";
   }
   _runner.recordMode = NO;
@@ -46,7 +48,6 @@ RCT_TEST(TextExample)
 // No switch or slider available on tvOS
 RCT_TEST(SwitchExample)
 RCT_TEST(SliderExample)
-// TabBarExample on tvOS passes locally but not on Travis
 RCT_TEST(TabBarExample)
 #endif
 
