@@ -61,6 +61,9 @@ import com.facebook.react.views.webview.events.TopMessageEvent;
 import org.json.JSONObject;
 import org.json.JSONException;
 
+import android.net.http.SslError;
+import android.webkit.SslErrorHandler;
+
 /**
  * Manages instances of {@link WebView}
  *
@@ -172,6 +175,12 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       dispatchEvent(
           webView,
           new TopLoadingErrorEvent(webView.getId(), eventData));
+    }
+
+    @Override
+    public void onReceivedSslError(WebView webView, SslErrorHandler handler, SslError error) {       
+        // Ignore the Ssl error
+        handler.proceed();
     }
 
     @Override
@@ -405,7 +414,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
   public void setAllowUniversalAccessFromFileURLs(WebView view, boolean allow) {
     view.getSettings().setAllowUniversalAccessFromFileURLs(allow);
   }
-  
+
   @ReactProp(name = "saveFormDataDisabled")
   public void setSaveFormDataDisabled(WebView view, boolean disable) {
     view.getSettings().setSaveFormData(!disable);
@@ -499,7 +508,7 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
         view.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
       } else if ("compatibility".equals(mixedContentMode)) {
         view.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
-      } 
+      }
     }
   }
 
