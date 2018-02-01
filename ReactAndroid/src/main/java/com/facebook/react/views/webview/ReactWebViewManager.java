@@ -61,6 +61,9 @@ import com.facebook.react.views.webview.events.TopMessageEvent;
 import org.json.JSONObject;
 import org.json.JSONException;
 
+import android.net.http.SslError;
+import android.webkit.SslErrorHandler;
+
 /**
  * Manages instances of {@link WebView}
  *
@@ -172,6 +175,18 @@ public class ReactWebViewManager extends SimpleViewManager<WebView> {
       dispatchEvent(
           webView,
           new TopLoadingErrorEvent(webView.getId(), eventData));
+    }
+
+    @Override
+    public void onReceivedSslError(WebView webView, SslErrorHandler handler, SslError error) {
+        boolean ignoreSslError = true;
+        if (ignoreSslError) {
+            // Ignore the Ssl error
+            handler.proceed();
+        }
+        else {
+            super.(webView, handler, error);
+        }
     }
 
     @Override
